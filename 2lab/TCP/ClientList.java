@@ -1,5 +1,7 @@
 package TCP;
 
+import com.google.common.hash.Hashing;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -32,7 +34,6 @@ public class ClientList extends Thread {
             outputMail.write("The name of file is " + inputFile.getName() + "\n");
             outputMail.flush();
 
-
             long firstFileLength;
             outputMail.write("The file length " + (firstFileLength = Long.parseLong(input.readUTF())) + " byte" + " \n");
             outputMail.flush();
@@ -43,18 +44,34 @@ public class ClientList extends Thread {
             }
             timeChecker.start();
             FileOutputStream outFile = new FileOutputStream("uploads/" + inputFile.getName().trim());
+
             byte[]buf = new byte[ChunkLength];
+
+
+            long leftBytes = firstFileLength;
+            String sha256hex;
+            String sha256hexHelper;
+            int nextChunk;
             int count;
-            while ((count = input.read(buf)) > 0) {
-                if (buf[count - 1 ] == -1) {
-                    outFile.write(buf, 0, count - 1);
-                    outFile.flush();
-                    break;
+
+            while (leftBytes > 0) {
+
+                nextChunk = (int) Math.min(leftBytes, ChunkLength);
+
+                sha256hexHelper = input.readUTF();
+                count = input.read(buf, 0, nextChunk);
+                sha256hex = Hashing.sha256().hashBytes(buf).toString();
+                if (sha256hex.equals(sha256hexHelper)) {
+                    outFile.write(buf, 0, count);
+                    leftBytes -= count;
+                    timeChecker.checkSpeed(count);
+                } else {
+                    System.err.println("Problems with file");
+                    closeConnection();
                 }
-                outFile.write(buf, 0, count );
-                outFile.flush();
-                timeChecker.checkSpeed(count);
             }
+
+
             timeChecker.finish();
             File secondFile = new File("uploads/" + inputFile.getName().trim());
             if (firstFileLength == secondFile.length()) {
@@ -66,13 +83,17 @@ public class ClientList extends Thread {
 
             outFile.close();
             flag = true;
-            System.out.println("Server close");
-            outputMail.close();
-            input.close();
-            socket.close();
+            closeConnection();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void closeConnection () throws IOException {
+        System.out.println("Server close");
+        outputMail.close();
+        input.close();
+        socket.close();
     }
 }
