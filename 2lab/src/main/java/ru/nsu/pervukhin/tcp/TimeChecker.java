@@ -1,5 +1,5 @@
-package TCP;
-import static TCP.ConstClass.*;
+package ru.nsu.pervukhin.tcp;
+import static ru.nsu.pervukhin.tcp.ConstClass.*;
 
 public class TimeChecker {
 
@@ -23,7 +23,7 @@ public class TimeChecker {
         byteRead += countReadBytes;
         long currentTime = System.currentTimeMillis();
 
-        if (currentTime - checkpointTime >= PrintTime) {
+        if (currentTime - checkpointTime >= PRINT_TIME) {
             calculateSpeed(currentTime);
             printSpeed();
         }

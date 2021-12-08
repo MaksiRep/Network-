@@ -1,10 +1,10 @@
-package TCP;
+package ru.nsu.pervukhin.tcp;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.Objects;
 
-import static TCP.ConstClass.*;
+import static ru.nsu.pervukhin.tcp.ConstClass.*;
 import com.google.common.hash.*;
 public class Client {
     private static Socket socket;
@@ -15,12 +15,12 @@ public class Client {
         try {
 
 
-            socket = new Socket(args[IPAddressForClient], Integer.parseInt(args[PortValForClient]));
+            socket = new Socket(args[IP_ADDRESS_FOR_CLIENT], Integer.parseInt(args[PORT_VAL_FOR_CLIENT]));
 
             output = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
             inputMail = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            File file = new File(args[FileIndex]);
+            File file = new File(args[FILE_INDEX]);
 
             if (!(file.exists())) {
                 System.err.println("File not found");
@@ -39,7 +39,7 @@ public class Client {
 
 
             FileInputStream fis = new FileInputStream(file);
-            byte[]buf = new byte[ChunkLength];
+            byte[]buf = new byte[CHUNK_LENGTH];
             int count;
 
             String sha256hex;

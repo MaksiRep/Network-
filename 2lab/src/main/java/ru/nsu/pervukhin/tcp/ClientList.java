@@ -1,11 +1,11 @@
-package TCP;
+package ru.nsu.pervukhin.tcp;
 
 import com.google.common.hash.Hashing;
 
 import java.io.*;
 import java.net.Socket;
 
-import static TCP.ConstClass.*;
+import static ru.nsu.pervukhin.tcp.ConstClass.*;
 
 public class ClientList extends Thread {
     private static Socket socket;
@@ -45,7 +45,7 @@ public class ClientList extends Thread {
             timeChecker.start();
             FileOutputStream outFile = new FileOutputStream("uploads/" + inputFile.getName().trim());
 
-            byte[]buf = new byte[ChunkLength];
+            byte[]buf = new byte[CHUNK_LENGTH];
 
 
             long leftBytes = firstFileLength;
@@ -56,7 +56,7 @@ public class ClientList extends Thread {
 
             while (leftBytes > 0) {
 
-                nextChunk = (int) Math.min(leftBytes, ChunkLength);
+                nextChunk = (int) Math.min(leftBytes, CHUNK_LENGTH);
 
                 sha256hexHelper = input.readUTF();
                 count = input.read(buf, 0, nextChunk);
